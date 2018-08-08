@@ -41,9 +41,56 @@ jobs:
             docker run -it --rm vagrant-aws bash -c "vagrant --version"
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list"
 
+  update_version:
+    working_directory: /app
+    docker:
+      - image: alpine
+    steps:
+      - checkout
+      - run:
+          name: Install package
+          command: |
+            apk --update --no-cache add bash git openssh-client jq curl
+      - run:
+          name: Setup git
+          command: |
+            git config push.default current
+            git config user.name "CircleCI"
+            git config user.email ${EMAIL}
+      - run:
+          name: Update VERSION
+          command: |
+            VERSION=`curl -s https://api.github.com/repos/hashicorp/vagrant/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+            echo "VERSION=${VERSION}"
+            sed -i -e "s/ENV VAGRANT_VERSION .*$/ENV VAGRANT_VERSION ${VERSION}/g" Dockerfile
+            git add Dockerfile
+
+            set +o pipefail
+            git commit -m "Bump version ${VERSION} from CircleCI" | true
+            git tag -a ${VERSION} -m "Vagrant ${VERSION}" | true
+            set -o pipefail
+
+            mkdir -m 700 -p ~/.ssh/
+            cat >> ~/.ssh/config << EOF
+            StrictHostKeyChecking no
+            EOF
+
+            git push origin --tags
+            git push origin
+
 workflows:
   version: 2
 
   build:
     jobs:
       - build
+
+  daily_update:
+    triggers:
+      - schedule:
+          cron: "30 0 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - update_version
