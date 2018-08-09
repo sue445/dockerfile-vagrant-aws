@@ -46,11 +46,11 @@ jobs:
     docker:
       - image: alpine
     steps:
-      - checkout
       - run:
           name: Install package
           command: |
             apk --update --no-cache add bash git openssh-client jq curl
+      - checkout
       - run:
           name: Setup git
           command: |
