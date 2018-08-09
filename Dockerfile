@@ -10,5 +10,4 @@ RUN apt-get update \
  && apt-get clean
 
 RUN vagrant plugin install vagrant-aws \
- && vagrant plugin install vagrant-serverspec \
- && vagrant plugin install dotenv
+ && vagrant plugin install vagrant-serverspec
