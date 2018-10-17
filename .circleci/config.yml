@@ -88,7 +88,7 @@ workflows:
   daily_update:
     triggers:
       - schedule:
-          cron: "10 0 * * *"
+          cron: "05 0 * * *"
           filters:
             branches:
               only: master
