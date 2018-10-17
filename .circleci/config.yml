@@ -62,6 +62,10 @@ jobs:
           command: |
             VERSION=`curl -s https://api.github.com/repos/hashicorp/vagrant/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
             echo "VERSION=${VERSION}"
+
+            # Check whether new package is exists
+            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200"
+
             sed -i -e "s/ENV VAGRANT_VERSION .*$/ENV VAGRANT_VERSION ${VERSION}/g" Dockerfile
             git add Dockerfile
 
