@@ -64,7 +64,12 @@ jobs:
             echo "VERSION=${VERSION}"
 
             # Check whether new package is exists
-            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200"
+            count=`curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200" | wc -l`
+            if [ "$count" == "0" ]; then
+              echo "${VERSION} is not released yet"
+              curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb
+              exit 0
+            fi
 
             sed -i -e "s/ENV VAGRANT_VERSION .*$/ENV VAGRANT_VERSION ${VERSION}/g" Dockerfile
             git add Dockerfile
