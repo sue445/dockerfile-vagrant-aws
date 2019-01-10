@@ -57,6 +57,8 @@ jobs:
           command: |
             docker run -it --rm vagrant-aws bash -c "vagrant --version"
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list"
+            docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-aws"
+            docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-serverspec"
 
   update_version:
     working_directory: /app
