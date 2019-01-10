@@ -99,9 +99,7 @@ jobs:
             set -o pipefail
 
             mkdir -m 700 -p ~/.ssh/
-            cat >> ~/.ssh/config << EOF
-            StrictHostKeyChecking no
-            EOF
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
             git push origin --tags
             git push origin
