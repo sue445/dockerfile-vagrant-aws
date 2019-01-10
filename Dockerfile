@@ -1,6 +1,6 @@
 FROM debian:stable-slim
 
-ENV VAGRANT_VERSION 2.2.2
+ENV VAGRANT_VERSION 2.2.3
 
 RUN apt-get update \
  && apt-get install -y curl build-essential rsync openssh-client git \
