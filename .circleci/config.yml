@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@volatile
+
 commands:
   build_with_cache:
     parameters:
@@ -60,6 +63,9 @@ jobs:
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-aws"
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-serverspec"
 
+      - run: apk --update --no-cache add bash curl
+      - slack/status
+      
   update_version:
     working_directory: /app
     docker:
@@ -104,6 +110,8 @@ jobs:
             git push origin --tags
             git push origin
 
+      - slack/notify-on-failure
+      
 workflows:
   version: 2
 
