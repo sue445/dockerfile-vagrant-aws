@@ -63,7 +63,7 @@ jobs:
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-aws"
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-serverspec"
 
-      - run: apk --update --no-cache add bash curl
+      - run: apk --update --no-cache add bash curl jq
       
       - slack/notify:
           event: fail
