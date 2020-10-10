@@ -64,7 +64,10 @@ jobs:
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-serverspec"
 
       - run: apk --update --no-cache add bash curl
-      - slack/status
+      
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
       
   update_version:
     working_directory: /app
@@ -110,7 +113,9 @@ jobs:
             git push origin --tags
             git push origin
 
-      - slack/notify-on-failure
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
       
 workflows:
   version: 2
