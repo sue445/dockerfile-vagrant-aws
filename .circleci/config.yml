@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@volatile
+  slack: circleci/slack@3
 
 commands:
   build_with_cache:
@@ -65,7 +65,7 @@ jobs:
 
       - run: apk --update --no-cache add bash curl
       - slack/status
-      
+
   update_version:
     working_directory: /app
     docker:
@@ -111,7 +111,7 @@ jobs:
             git push origin
 
       - slack/notify-on-failure
-      
+
 workflows:
   version: 2
 
