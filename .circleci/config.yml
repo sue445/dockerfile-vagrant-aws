@@ -51,6 +51,7 @@ jobs:
       - image: docker:stable-git
     steps:
       - checkout
+      - run: apk --update --no-cache add bash curl
       - setup_remote_docker
       - build_with_cache:
           image_name:       vagrant-aws
@@ -63,7 +64,6 @@ jobs:
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-aws"
             docker run -it --rm vagrant-aws bash -c "vagrant plugin list | grep vagrant-serverspec"
 
-      - run: apk --update --no-cache add bash curl
       - slack/status
 
   update_version:
