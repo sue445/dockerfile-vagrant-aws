@@ -1,0 +1,85 @@
+name: update_version
+
+on:
+  schedule:
+    - cron: "0 19 * * *" # JST 4:00
+  workflow_dispatch:
+
+jobs:
+  update_version:
+    runs-on: ubuntu-latest
+
+    container: alpine
+
+    steps:
+      - name: Install package
+        run: |
+          apk --update --no-cache add bash git openssh-client jq curl
+
+      - uses: actions/checkout@v2
+
+      - name: Setup git
+        run: |
+          git config push.default current
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+      - name: Update VERSION
+        run: |
+          VERSION=`curl -s https://api.github.com/repos/hashicorp/vagrant/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+          echo "VERSION=${VERSION}"
+
+          # Check whether new package is exists
+          count=`curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200" | wc -l`
+          if [ "$count" == "0" ]; then
+            echo "${VERSION} is not released yet"
+            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb
+            exit 0
+          fi
+
+          sed -i -e "s/ENV VAGRANT_VERSION .*$/ENV VAGRANT_VERSION ${VERSION}/g" Dockerfile
+          git add Dockerfile
+
+          set +e
+          git commit -m "Bump version ${VERSION} from GitHub Actions"
+          git tag -a ${VERSION} -m "Vagrant ${VERSION}"
+          git push origin --tags
+          set -e
+
+          git push origin
+
+      - name: Slack Notification (not success)
+        uses: homoluctus/slatify@master
+        if: "! success()"
+        continue-on-error: true
+        with:
+          job_name: '*update_version*'
+          type: ${{ job.status }}
+          icon_emoji: ":octocat:"
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    needs:
+      - update_version
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - run: docker-compose --file docker-compose.test.yml build
+      - run: docker-compose --file docker-compose.test.yml run sut
+
+      - name: Slack Notification (not success)
+        uses: homoluctus/slatify@master
+        if: "! success()"
+        continue-on-error: true
+        with:
+          job_name: '*build*'
+          type: ${{ job.status }}
+          icon_emoji: ":octocat:"
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          token: ${{ secrets.GITHUB_TOKEN }}
