@@ -2,22 +2,21 @@ name: update_version
 
 on:
   schedule:
-    - cron: "0 21 * * *" # JST 6:00
+    - cron: "0 19 * * *" # JST 4:00
   workflow_dispatch:
 
 jobs:
   update_version:
     runs-on: ubuntu-latest
 
-    container: python:3.7
+    container: alpine
 
     steps:
-      - uses: actions/checkout@v2
-
       - name: Install package
         run: |
-          apt-get update
-          apt-get install git jq -y
+          apk --update --no-cache add bash git openssh-client jq curl
+
+      - uses: actions/checkout@v2
 
       - name: Setup git
         run: |
@@ -27,21 +26,23 @@ jobs:
 
       - name: Update VERSION
         run: |
-          set -xe
-          # c.f. https://github.com/stedolan/jq/issues/708#issuecomment-75394871
-          VERSION=$(curl -s https://pypi.org/pypi/awscli/json | jq --raw-output '.releases | keys | sort_by(. | split(".") | map(tonumber)) | .[-1:][0]')
+          VERSION=`curl -s https://api.github.com/repos/hashicorp/vagrant/tags | jq --raw-output .[0].name | sed -e 's/v//g'`
+          echo "VERSION=${VERSION}"
 
-          if [ -z "$VERSION" ]; then
-            echo '$VERSION is empty!'
-            exit 1
+          # Check whether new package is exists
+          count=`curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200" | wc -l`
+          if [ "$count" == "0" ]; then
+            echo "${VERSION} is not released yet"
+            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb
+            exit 0
           fi
 
-          sed -i -e "s/ENV AWSCLI_VERSION .*$/ENV AWSCLI_VERSION ${VERSION}/g" Dockerfile
+          sed -i -e "s/ENV VAGRANT_VERSION .*$/ENV VAGRANT_VERSION ${VERSION}/g" Dockerfile
           git add Dockerfile
 
           set +e
           git commit -m "Bump version ${VERSION} from GitHub Actions"
-          git tag -a ${VERSION} -m "Release ${VERSION}"
+          git tag -a ${VERSION} -m "Vagrant ${VERSION}"
           git push origin --tags
           set -e
 
