@@ -4,7 +4,7 @@ RUN apt-get update \
  && apt-get install -y curl build-essential rsync openssh-client git \
  && apt-get clean
 
-ENV VAGRANT_VERSION 2.2.15
+ENV VAGRANT_VERSION 2.2.16
 
 RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb \
  && dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb \
