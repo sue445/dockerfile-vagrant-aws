@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM debian:buster-slim
 
 RUN apt-get update \
  && apt-get install -y curl build-essential rsync openssh-client git \
