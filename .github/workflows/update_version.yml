@@ -9,13 +9,7 @@ jobs:
   update_version:
     runs-on: ubuntu-latest
 
-    container: alpine
-
     steps:
-      - name: Install package
-        run: |
-          apk --update --no-cache add bash git openssh-client jq curl
-
       - uses: actions/checkout@v2
 
       - name: Setup git
@@ -49,7 +43,7 @@ jobs:
           git push origin
 
       - name: Slack Notification (not success)
-        uses: homoluctus/slatify@master
+        uses: lazy-actions/slatify@master
         if: "! success()"
         continue-on-error: true
         with:
@@ -74,7 +68,7 @@ jobs:
       - run: docker-compose --file docker-compose.test.yml run sut
 
       - name: Slack Notification (not success)
-        uses: homoluctus/slatify@master
+        uses: lazy-actions/slatify@master
         if: "! success()"
         continue-on-error: true
         with:
