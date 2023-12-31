@@ -10,5 +10,7 @@ RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${
  && dpkg -i vagrant_${VAGRANT_VERSION}-1_amd64.deb \
  && rm vagrant_${VAGRANT_VERSION}-1_amd64.deb
 
-RUN vagrant plugin install vagrant-aws \
- && vagrant plugin install vagrant-serverspec
+# RUN vagrant plugin install vagrant-aws \
+#  && vagrant plugin install vagrant-serverspec
+
+RUN vagrant plugin install vagrant-serverspec
