@@ -27,7 +27,7 @@ jobs:
           count=`curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb | grep "HTTP/2 200" | wc -l`
           if [ "$count" == "0" ]; then
             echo "${VERSION} is not released yet"
-            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}_x86_64.deb
+            curl -s -I https://releases.hashicorp.com/vagrant/${VERSION}/vagrant_${VERSION}-1_x86_64.deb
             exit 0
           fi
 
