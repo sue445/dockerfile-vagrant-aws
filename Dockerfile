@@ -6,9 +6,9 @@ RUN apt-get update \
 
 ENV VAGRANT_VERSION 2.4.0
 
-RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb \
- && dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb \
- && rm vagrant_${VAGRANT_VERSION}_x86_64.deb
+RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}-1_amd64.deb \
+ && dpkg -i vagrant_${VAGRANT_VERSION}-1_amd64.deb \
+ && rm vagrant_${VAGRANT_VERSION}-1_amd64.deb
 
 RUN vagrant plugin install vagrant-aws \
  && vagrant plugin install vagrant-serverspec
