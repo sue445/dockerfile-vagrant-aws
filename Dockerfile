@@ -4,11 +4,11 @@ RUN apt-get update \
  && apt-get install -y curl build-essential rsync openssh-client git \
  && apt-get clean
 
-ENV VAGRANT_VERSION 2.2.19
+ENV VAGRANT_VERSION 2.4.0
 
-RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.deb \
- && dpkg -i vagrant_${VAGRANT_VERSION}_x86_64.deb \
- && rm vagrant_${VAGRANT_VERSION}_x86_64.deb
+RUN curl -O https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}-1_amd64.deb \
+ && dpkg -i vagrant_${VAGRANT_VERSION}-1_amd64.deb \
+ && rm vagrant_${VAGRANT_VERSION}-1_amd64.deb
 
-RUN vagrant plugin install vagrant-aws \
+RUN vagrant plugin install vagrant-aws --debug --verbose \
  && vagrant plugin install vagrant-serverspec
